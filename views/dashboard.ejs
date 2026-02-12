@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+</head>
+<body>
+  <h2>Dashboard</h2>
+
+  <form action="/add-note" method="POST">
+    <input type="text" name="content" placeholder="Write a note..." required />
+    <button type="submit">Add Note</button>
+  </form>
+
+  <h3>Your Notes:</h3>
+
+  <ul>
+    <% notes.forEach(note => { %>
+      <li>
+        <%= note.content %>
+        <a href="/delete/<%= note._id %>">Delete</a>
+      </li>
+    <% }) %>
+  </ul>
+
+  <br>
+  <a href="/logout">Logout</a>
+</body>
+</html>
