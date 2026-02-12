@@ -6,11 +6,12 @@ const bcrypt = require("bcryptjs");
 
 const app = express();
 
-// MongoDB Connection
+// ===== MongoDB Connection =====
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+  .catch(err => console.log("MongoDB Error:", err));
 
+// ===== Middleware =====
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
@@ -20,74 +21,108 @@ app.use(session({
   saveUninitialized: false
 }));
 
+// ===== Models =====
 const User = require("./models/User");
 const Note = require("./models/Note");
+
+// ===== Routes =====
 
 // Home
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-// Register
+// Register Page
 app.get("/register", (req, res) => {
   res.render("register");
 });
 
+// Register User
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  const hash = await bcrypt.hash(password, 10);
-  await User.create({ username, password: hash });
-  res.redirect("/login");
+  try {
+    const { username, password } = req.body;
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser) return res.send("User already exists");
+
+    const hash = await bcrypt.hash(password, 10);
+    await User.create({ username, password: hash });
+
+    res.redirect("/login");
+  } catch (err) {
+    res.send("Error registering user");
+  }
 });
 
-// Login
+// Login Page
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
+// Login User
 app.post("/login", async (req, res) => {
-  const user = await User.findOne({ username: req.body.username });
-  if (!user) return res.send("User not found");
+  try {
+    const user = await User.findOne({ username: req.body.username });
+    if (!user) return res.send("User not found");
 
-  const valid = await bcrypt.compare(req.body.password, user.password);
-  if (!valid) return res.send("Wrong password");
+    const valid = await bcrypt.compare(req.body.password, user.password);
+    if (!valid) return res.send("Wrong password");
 
-  req.session.userId = user._id;
-  res.redirect("/dashboard");
+    req.session.userId = user._id;
+    res.redirect("/dashboard");
+  } catch (err) {
+    res.send("Login error");
+  }
 });
 
 // Dashboard
 app.get("/dashboard", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
 
-  const notes = await Note.find({ user: req.session.userId });
-  res.render("dashboard", { notes });
+  try {
+    const notes = await Note.find({ user: req.session.userId });
+    res.render("dashboard", { notes });
+  } catch (err) {
+    res.send("Error loading dashboard");
+  }
 });
 
 // Add Note
 app.post("/add-note", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
 
-  await Note.create({
-    content: req.body.content,
-    user: req.session.userId
-  });
+  try {
+    await Note.create({
+      content: req.body.content,
+      user: req.session.userId
+    });
 
-  res.redirect("/dashboard");
+    res.redirect("/dashboard");
+  } catch (err) {
+    res.send("Error adding note");
+  }
 });
 
 // Delete Note
 app.get("/delete/:id", async (req, res) => {
-  await Note.findByIdAndDelete(req.params.id);
-  res.redirect("/dashboard");
+  try {
+    await Note.findByIdAndDelete(req.params.id);
+    res.redirect("/dashboard");
+  } catch (err) {
+    res.send("Error deleting note");
+  }
 });
 
 // Logout
 app.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/login");
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+// ===== PORT FIX (IMPORTANT FOR RENDER) =====
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
