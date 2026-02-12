@@ -1,28 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>Dashboard | QuickNotes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 600px;
+      margin-top: 50px;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 5px 0 0 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #667eea;
+      color: white;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f1f1f1;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .delete {
+      color: red;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .logout {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #667eea;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-  <h2>Dashboard</h2>
+
+<div class="container">
+  <h2>QuickNotes Dashboard</h2>
 
   <form action="/add-note" method="POST">
-    <input type="text" name="content" placeholder="Write a note..." required />
-    <button type="submit">Add Note</button>
+    <input type="text" name="content" placeholder="Write your note..." required />
+    <button type="submit">Add</button>
   </form>
-
-  <h3>Your Notes:</h3>
 
   <ul>
     <% notes.forEach(note => { %>
       <li>
         <%= note.content %>
-        <a href="/delete/<%= note._id %>">Delete</a>
+        <a class="delete" href="/delete/<%= note._id %>">X</a>
       </li>
     <% }) %>
   </ul>
 
-  <br>
-  <a href="/logout">Logout</a>
+  <a class="logout" href="/logout">Logout</a>
+</div>
+
 </body>
 </html>

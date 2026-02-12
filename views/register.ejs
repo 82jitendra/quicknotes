@@ -1,20 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register</title>
+  <title>Register | QuickNotes</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #43cea2;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2bb673;
+    }
+
+    a {
+      display: block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #185a9d;
+    }
+  </style>
 </head>
 <body>
-  <h2>Register</h2>
 
+<div class="card">
+  <h2>Register</h2>
   <form method="POST">
     <input type="text" name="username" placeholder="Username" required />
-    <br><br>
     <input type="password" name="password" placeholder="Password" required />
-    <br><br>
     <button type="submit">Register</button>
   </form>
+  <a href="/login">Already have an account?</a>
+</div>
 
-  <br>
-  <a href="/login">Already have an account? Login</a>
 </body>
 </html>
