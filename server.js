@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
+const path = require("path");
 
 const app = express();
 
@@ -13,6 +14,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // ===== Middleware =====
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views")); // 🔥 important fix
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -50,6 +52,7 @@ app.post("/register", async (req, res) => {
 
     res.redirect("/login");
   } catch (err) {
+    console.log(err);
     res.send("Error registering user");
   }
 });
@@ -71,6 +74,7 @@ app.post("/login", async (req, res) => {
     req.session.userId = user._id;
     res.redirect("/dashboard");
   } catch (err) {
+    console.log(err);
     res.send("Login error");
   }
 });
@@ -83,6 +87,7 @@ app.get("/dashboard", async (req, res) => {
     const notes = await Note.find({ user: req.session.userId });
     res.render("dashboard", { notes });
   } catch (err) {
+    console.log(err);
     res.send("Error loading dashboard");
   }
 });
@@ -99,6 +104,7 @@ app.post("/add-note", async (req, res) => {
 
     res.redirect("/dashboard");
   } catch (err) {
+    console.log(err);
     res.send("Error adding note");
   }
 });
@@ -109,6 +115,7 @@ app.get("/delete/:id", async (req, res) => {
     await Note.findByIdAndDelete(req.params.id);
     res.redirect("/dashboard");
   } catch (err) {
+    console.log(err);
     res.send("Error deleting note");
   }
 });
